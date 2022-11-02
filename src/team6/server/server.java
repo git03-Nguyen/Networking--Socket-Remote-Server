@@ -1,9 +1,25 @@
 package team6.server;
 
-public class server {
+import java.io.IOException;
+import javax.swing.JFrame;
+import team6.server.controller.Controller;
+import team6.server.gui.ServerGUI;
 
-    static void main(String[] args) {
-        // TODO code application logic here
+/**
+ *
+ * @author KOHAKU
+ */
+public class Server {
+    public static void main(String args[]){
+        ServerGUI serverGUI = new ServerGUI();
+        serverGUI.setVisible(true);
+        serverGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        try{
+            Controller controller = new Controller(serverGUI);
+        }
+        catch(IOException e){
+            
+        }
     }
-    
 }
