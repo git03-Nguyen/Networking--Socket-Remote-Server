@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package team6.server.receive;
+package team6.server.receiver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class Receive {
                     while(true){
                         command = in.readLine();
                         System.out.println(command);
-                        // form command: <command>
+                        // form message: <functionality>.<command>.<data>
                         if(!checkCommand()) continue;
                         
                         do{
@@ -62,7 +62,7 @@ public class Receive {
                                 break;
                             }
                             
-                        }while(false);
+                        } while(false);
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(Receive.class.getName()).log(Level.SEVERE, null, ex);

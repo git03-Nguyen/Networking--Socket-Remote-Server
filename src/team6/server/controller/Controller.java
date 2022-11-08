@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import team6.server.gui.ServerGUI;
-import team6.server.receive.Receive;
+import team6.server.receiver.Receive;
 
 /**
  *
@@ -21,7 +21,7 @@ public class Controller {
         // String ip = serverGUI.getIP();
         int port = Integer.parseInt(serverGUI.getPort());
         try{
-            ServerSocket serverSocket = new ServerSocket(9999);
+            ServerSocket serverSocket = new ServerSocket(port);
             socket = serverSocket.accept();
             System.out.println("Successfully connected");
         }
@@ -29,7 +29,7 @@ public class Controller {
         catch (IOException e){
             
         }
-        // print successfully connected
+        // start receiving messages from client
         receive = new Receive(socket);
     } 
 }

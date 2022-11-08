@@ -18,24 +18,31 @@ import java.util.logging.Logger;
  */
 public class Applications {
     private Socket socket;
-    BufferedReader in;
-    PrintWriter out;
+    private BufferedReader in;
+    private PrintWriter out;
+    private Thread receiver;
+    private Thread sender;
     
     public Applications(Socket socket) throws IOException{
         this.socket = socket;
+        // send initial list of application
         send();
+        // listen to commands to execute and continue to send()
+        receive();
     }
     
     private void send(){
         // consider again!!! 
         // haven't update application after seconds yet.
-        System.out.println("Ready send data");
         
-        Thread thread = new Thread(){
+        System.out.println("Ready to send data");
+        
+        sender = new Thread(){
             @Override
             public void run(){
-                System.out.println("in to new thread");
-                Process process;
+                
+                System.out.println("into new thread");
+                Process process = null;
                 try {
                     process = new ProcessBuilder("powershell","\"gps| ? {$_.mainwindowtitle.length -ne 0} | Format-Table -HideTableHeaders  name, ID").start();
                     String line;
@@ -60,6 +67,23 @@ public class Applications {
             }
         };
         
-        thread.start();
+        sender.start();
     }
+    
+    private void receive() {
+        // create a new thread to listening to command. i.e: start proc, kill proc, ...
+        // If the socket is interupted, close()
+            
+        receiver = new Thread() {
+            // Recognize commands
+            // Execute commands
+            // Refresh the app list (send again) (?)
+        };
+        receiver.start();
+    }
+    
+    private void close() {
+        
+    }
+    
 }

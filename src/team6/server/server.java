@@ -12,8 +12,6 @@ import team6.server.gui.ServerGUI;
 public class Server {
     public static void main(String args[]){
         ServerGUI serverGUI = new ServerGUI();
-        serverGUI.setVisible(true);
-        serverGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         try{
             Controller controller = new Controller(serverGUI);

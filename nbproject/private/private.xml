@@ -3,11 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/nguye/source/hk3/do_an_ly_thuyet_mang_may_tinh/Remote_Server/src/team6/server/receive/Receive.java</file>
-            <file>file:/C:/Users/nguye/source/hk3/do_an_ly_thuyet_mang_may_tinh/Remote_Server/src/team6/server/gui/ServerGUI.java</file>
-            <file>file:/C:/Users/nguye/source/hk3/do_an_ly_thuyet_mang_may_tinh/Remote_Server/src/team6/server/handle/Applications.java</file>
-            <file>file:/C:/Users/nguye/source/hk3/do_an_ly_thuyet_mang_may_tinh/Remote_Server/src/team6/server/controller/Controller.java</file>
-            <file>file:/C:/Users/nguye/source/hk3/do_an_ly_thuyet_mang_may_tinh/Remote_Server/src/team6/server/Server.java</file>
+            <file>file:/E:/SV_HK3/MangMayTinh/LT/DoAnLTGiuaKi/ProjectFile/Remote_Server/src/team6/server/Server.java</file>
+            <file>file:/E:/SV_HK3/MangMayTinh/LT/DoAnLTGiuaKi/ProjectFile/Remote_Server/src/team6/server/handle/Applications.java</file>
+            <file>file:/E:/SV_HK3/MangMayTinh/LT/DoAnLTGiuaKi/ProjectFile/Remote_Server/src/team6/server/controller/Controller.java</file>
+            <file>file:/E:/SV_HK3/MangMayTinh/LT/DoAnLTGiuaKi/ProjectFile/Remote_Server/src/team6/server/receiver/Receive.java</file>
+            <file>file:/E:/SV_HK3/MangMayTinh/LT/DoAnLTGiuaKi/ProjectFile/Remote_Server/src/team6/server/gui/ServerGUI.java</file>
         </group>
     </open-files>
 </project-private>
