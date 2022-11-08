@@ -2,33 +2,33 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package team6.server.handle;
+package team6.server.handler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import team6.server.socket.HandlerSocket;
 
 /**
  *
  * @author KOHAKU
  */
-public class Applications {
-    private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
-    private Thread receiver;
-    private Thread sender;
+public class Applications extends AbstractHandler {
+    private HandlerSocket handlerSocket;
     
-    public Applications(Socket socket) throws IOException{
-        this.socket = socket;
+    public Applications(HandlerSocket handlerSocket, String command) throws IOException{
+        this.handlerSocket = handlerSocket;
         // send initial list of application
-        send();
-        // listen to commands to execute and continue to send()
+        executeCommand(command);
+        // listen to newer info
         receive();
+    }
+    
+    void executeCommand(String command) {
+        if (!isValidCommand(command)) return;
     }
     
     private void send(){
@@ -82,8 +82,18 @@ public class Applications {
         receiver.start();
     }
     
-    private void close() {
+    void close() {
         
+    }    
+
+    boolean isValidCommand(String command)  {
+        int balance = 0;
+        for (int i = 0;i < command.length(); i++) {
+            if (balance < 0 || balance > 1) return false;
+            if (command.charAt(i) == '<') balance++;
+            else if (command.charAt(i) == '>') balance--;
+        }
+        return balance == 0;
     }
-    
+
 }
