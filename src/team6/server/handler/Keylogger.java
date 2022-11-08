@@ -4,10 +4,32 @@
  */
 package team6.server.handler;
 
+import team6.server.socket.HandlerSocket;
+
 /**
  *
  * @author Administrator
  */
-public class Keylogger {
+public class Keylogger extends AbstractHandler {
+    private HandlerSocket handlerSocket;
+
+    public Keylogger(HandlerSocket handlerSocket) {
+        this.handlerSocket = handlerSocket;
+        startLogging();
+    }
+    
+    @Override
+    public void executeCommand(String command) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void close() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void startLogging() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
 }

@@ -10,10 +10,11 @@ import team6.server.socket.HandlerSocket;
  *
  * @author Administrator
  */
-public abstract class AbstractHandler {    
-    abstract void executeCommand(String command);
+public abstract class AbstractHandler {  
+    private HandlerSocket handlerSocket;
     
-    abstract boolean isValidCommand(String command);
+    abstract public void executeCommand(String command);
     
-    abstract void close();
+    abstract public void close();
+
 }

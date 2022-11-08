@@ -7,7 +7,6 @@ package team6.server.handler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import team6.server.socket.HandlerSocket;
@@ -19,81 +18,87 @@ import team6.server.socket.HandlerSocket;
 public class Applications extends AbstractHandler {
     private HandlerSocket handlerSocket;
     
-    public Applications(HandlerSocket handlerSocket, String command) throws IOException{
+    public Applications(HandlerSocket handlerSocket) throws IOException{
         this.handlerSocket = handlerSocket;
-        // send initial list of application
-        executeCommand(command);
-        // listen to newer info
-        receive();
+        getApplications();
     }
     
-    void executeCommand(String command) {
-        if (!isValidCommand(command)) return;
-    }
-    
-    private void send(){
-        // consider again!!! 
-        // haven't update application after seconds yet.
-        
-        System.out.println("Ready to send data");
-        
-        sender = new Thread(){
+    @Override
+    public void executeCommand(String command) {
+        Thread thread = new Thread() {
             @Override
-            public void run(){
-                
-                System.out.println("into new thread");
-                Process process = null;
-                try {
-                    process = new ProcessBuilder("powershell","\"gps| ? {$_.mainwindowtitle.length -ne 0} | Format-Table -HideTableHeaders  name, ID").start();
-                    String line;
+            public void run() {
+                System.out.println("Executing command: " + command);
+                String[] message = command.split("$");
 
-                    in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    out = new PrintWriter(socket.getOutputStream());
+                while (true) {
+                    try {
+                       if (message[0].equals("<GET>")) {
+                            getApplications();
+                            break;
+                        }
 
-                    while((line = in.readLine()) != null){
-                        System.out.println(line);
-                        out.println(line);
-                        out.flush();
+                        if  (message[0].equals("<START>")) {
+                            int ID = Integer.parseInt(message[1].substring(1, message[1].length() - 1));
+                            startApp(ID);
+                            getApplications();
+                            break;
+                        }
+
+                        if (message[0].equals("<KILL>")) {
+                            int ID = Integer.parseInt(message[1].substring(1, message[1].length() - 1));
+                            killApp(ID);
+                            getApplications();
+                            break;
+                        } 
+                    }
+                    catch(NumberFormatException e) {
+                        handlerSocket.send("<ERROR>");
+                        e.printStackTrace();
                     }
                     
-                    in.close();
-                    out.close();
-                    
-                    System.out.println("Completely send");
-                
-                } catch (IOException ex) {
-                    Logger.getLogger(Applications.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        };
-        
-        sender.start();
-    }
-    
-    private void receive() {
-        // create a new thread to listening to command. i.e: start proc, kill proc, ...
-        // If the socket is interupted, close()
             
-        receiver = new Thread() {
-            // Recognize commands
-            // Execute commands
-            // Refresh the app list (send again) (?)
         };
-        receiver.start();
+        
+        thread.start();
     }
     
-    void close() {
+    @Override
+    public void close() {
         
-    }    
-
-    boolean isValidCommand(String command)  {
-        int balance = 0;
-        for (int i = 0;i < command.length(); i++) {
-            if (balance < 0 || balance > 1) return false;
-            if (command.charAt(i) == '<') balance++;
-            else if (command.charAt(i) == '>') balance--;
-        }
-        return balance == 0;
     }
+    
+    private void getApplications() {
+        Process process = null;
+        BufferedReader buffer = null;
 
+        try {
+            process = new ProcessBuilder("powershell","\"gps| ? {$_.mainwindowtitle.length -ne 0} | Format-Table -HideTableHeaders  name, ID").start();
+            String line;
+
+            buffer = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            while((line = buffer.readLine()) != null){
+                System.out.println(line);
+                handlerSocket.send(line);
+            }
+
+            System.out.println("Completely sent");
+
+        } catch (IOException ex) {
+            Logger.getLogger(Applications.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void startApp(int ID) {
+        
+    }
+    
+    private void killApp(int ID) {
+        
+    }
+    
 }
+

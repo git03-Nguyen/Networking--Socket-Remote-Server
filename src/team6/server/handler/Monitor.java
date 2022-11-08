@@ -4,10 +4,32 @@
  */
 package team6.server.handler;
 
+import team6.server.socket.HandlerSocket;
+
 /**
  *
  * @author Administrator
  */
-public class Monitor {
+public class Monitor extends AbstractHandler {
+    private HandlerSocket handlerSocket;
     
+    public Monitor(HandlerSocket handlerSocket) {
+        this.handlerSocket = handlerSocket;
+        getMonitor();
+    }
+
+    @Override
+    public void executeCommand(String command) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void close() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void getMonitor() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
+
