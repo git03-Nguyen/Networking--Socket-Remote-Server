@@ -2,13 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package team6.server.controller;
+package team6.server.socket;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import team6.server.gui.ServerGUI;
-import team6.server.receiver.Receive;
 
 /**
  *

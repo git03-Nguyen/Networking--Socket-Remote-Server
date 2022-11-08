@@ -2,7 +2,7 @@ package team6.server;
 
 import java.io.IOException;
 import javax.swing.JFrame;
-import team6.server.controller.Controller;
+import team6.server.socket.Controller;
 import team6.server.gui.ServerGUI;
 
 /**
