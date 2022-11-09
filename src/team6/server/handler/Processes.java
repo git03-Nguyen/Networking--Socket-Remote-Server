@@ -4,17 +4,17 @@
  */
 package team6.server.handler;
 
-import team6.server.socket.HandlerSocket;
+import team6.server.socket.SocketHandler;
 
 /**
  *
  * @author Administrator
  */
 public class Processes extends AbstractHandler {
-    HandlerSocket handlerSocket;
+    SocketHandler socketHandler;
 
-    public Processes(HandlerSocket handlerSocket) {
-        super(handlerSocket);
+    public Processes(SocketHandler socketHandler) {
+        super(socketHandler);
     }
     
     @Override

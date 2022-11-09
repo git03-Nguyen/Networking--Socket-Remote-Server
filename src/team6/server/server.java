@@ -1,8 +1,8 @@
 package team6.server;
 
 import java.io.IOException;
-import team6.server.socket.HandlerSocket;
-import team6.server.gui.ServerGUI;
+import team6.server.socket.SocketHandler;
+import team6.server.gui.GUI;
 
 /**
  *
@@ -10,9 +10,9 @@ import team6.server.gui.ServerGUI;
  */
 public class Server {
     public static void main(String args[]){
-        ServerGUI serverGUI = new ServerGUI();
+        GUI serverGUI = new GUI();
         try{
-            HandlerSocket controller = new HandlerSocket(Integer.parseInt(serverGUI.getPort()));
+            SocketHandler controller = new SocketHandler(Integer.parseInt(serverGUI.getPort()));
         }
         catch(IOException e){
             e.printStackTrace();

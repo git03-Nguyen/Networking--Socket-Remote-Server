@@ -1,16 +1,11 @@
 package team6.server.socket;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 import java.util.logging.*;
 import team6.server.handler.*;
 
-public class HandlerSocket {
+public class SocketHandler {
     private Socket socket;
     private int port;
     
@@ -22,7 +17,7 @@ public class HandlerSocket {
     
     private AbstractHandler currentHandler;
     
-    public HandlerSocket(int port) throws IOException{
+    public SocketHandler(int port) throws IOException{
         setUpSocket(port);
     }
     
@@ -38,7 +33,7 @@ public class HandlerSocket {
         // error connect => exit
         catch (IOException e){
             System.err.println("Unsuccessfully connected!");
-            Logger.getLogger(HandlerSocket.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, e);
         }
         
         // start receiving messages from client -> new thread
@@ -73,35 +68,35 @@ public class HandlerSocket {
                         if(message[0].equals("<PRC>")){
                             // call process handle;
                             System.out.println("Calling process handler ...");
-                            currentHandler = new Processes(HandlerSocket.this);
+                            currentHandler = new Processes(SocketHandler.this);
                             continue;
                         }
 
                         if(message[0].equals("<APP>")){
                             // call apps handle
                             System.out.println("Calling application handler ...");
-                            currentHandler = new Applications(HandlerSocket.this);
+                            currentHandler = new Applications(SocketHandler.this);
                             continue;
                         }
 
                         if(message[0].equals("<MON>")){
                             // call monitor hanlde;
                             System.err.println("Calling monitor handler ...");
-                            currentHandler = new Monitor(HandlerSocket.this);
+                            currentHandler = new Monitor(SocketHandler.this);
                             continue;
                         }
 
                         if(message[0].equals("<KEY>")){
                             // call keyloger handle;
                             System.err.println("Calling keylogger handler ...");
-                            currentHandler = new Keylogger(HandlerSocket.this);
+                            currentHandler = new Keylogger(SocketHandler.this);
                             continue;
                         }
 
                         if(message[0].equals("<SYS>")){
                             // call system handle;
                             System.err.println("Calling system handler ...");
-                            currentHandler = new SystemCtrl(HandlerSocket.this);
+                            currentHandler = new SystemCtrl(SocketHandler.this);
                             continue;
                         }
 
@@ -112,7 +107,7 @@ public class HandlerSocket {
                         }
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(HandlerSocket.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, ex);
                     close();
                 }
             }
@@ -144,7 +139,7 @@ public class HandlerSocket {
             socket.close();
             setUpSocket(port);
         } catch (IOException ex) {
-            Logger.getLogger(HandlerSocket.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

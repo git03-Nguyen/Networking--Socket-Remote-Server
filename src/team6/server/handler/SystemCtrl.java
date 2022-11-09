@@ -1,20 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package team6.server.handler;
 
-import team6.server.socket.HandlerSocket;
+import team6.server.socket.SocketHandler;
 
-/**
- *
- * @author Administrator
- */
 public class SystemCtrl extends AbstractHandler {
-    HandlerSocket handlerSocket;
+    SocketHandler socketHandler;
 
-    public SystemCtrl(HandlerSocket handlerSocket) {
-        super(handlerSocket);
+    public SystemCtrl(SocketHandler socketHandler) {
+        super(socketHandler);
     }
     
     @Override
@@ -33,6 +25,18 @@ public class SystemCtrl extends AbstractHandler {
     }
 
     private void getSystemInfo() {
-        handlerSocket.send("blablabla");
+        socketHandler.send("blablabla");
+    }
+    
+    private void shutDown() {
+        
+    }
+    
+    private void restart() {
+        
+    }
+    
+    private void Logout() {
+        
     }
 }

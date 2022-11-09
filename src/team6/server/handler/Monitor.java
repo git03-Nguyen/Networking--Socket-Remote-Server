@@ -4,17 +4,17 @@
  */
 package team6.server.handler;
 
-import team6.server.socket.HandlerSocket;
+import team6.server.socket.SocketHandler;
 
 /**
  *
  * @author Administrator
  */
 public class Monitor extends AbstractHandler {
-    private HandlerSocket handlerSocket;
+    private SocketHandler socketHandler;
 
-    public Monitor(HandlerSocket handlerSocket) {
-        super(handlerSocket);
+    public Monitor(SocketHandler socketHandler) {
+        super(socketHandler);
     }
 
     @Override

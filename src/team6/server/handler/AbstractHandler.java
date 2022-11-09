@@ -1,17 +1,17 @@
 package team6.server.handler;
 
-import team6.server.socket.HandlerSocket;
+import team6.server.socket.SocketHandler;
 
 public abstract class AbstractHandler {
-    private HandlerSocket handlerSocket;
-    // We can use HandlerSocket object to access:
+    private SocketHandler socketHandler;
+    // We can use SocketHandler object to access:
         // Socket socket;
         // void send(String);
         // BufferedReader reader;
         // BufferedWriter writer;
     
-    public AbstractHandler(HandlerSocket handlerSocket) {
-        this.handlerSocket = handlerSocket;
+    public AbstractHandler(SocketHandler handlerSocket) {
+        this.socketHandler = handlerSocket;
         
         // Get the initial data when first activate the handler
         // i.e: Applications: send a list of apps

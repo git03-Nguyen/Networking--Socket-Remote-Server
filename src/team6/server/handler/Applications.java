@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package team6.server.handler;
 
 import java.io.BufferedReader;
@@ -9,17 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import team6.server.socket.HandlerSocket;
+import team6.server.socket.SocketHandler;
 
 /**
  *
  * @author KOHAKU
  */
 public class Applications extends AbstractHandler {
-    private HandlerSocket handlerSocket;
+    private SocketHandler socketHandler;
 
-    public Applications(HandlerSocket handlerSocket) {
-        super(handlerSocket);
+    public Applications(SocketHandler socketHandler) {
+        super(socketHandler);
     }
     
     @Override
@@ -52,7 +48,7 @@ public class Applications extends AbstractHandler {
                         } 
                     }
                     catch(NumberFormatException e) {
-                        handlerSocket.send("<ERROR>");
+                        socketHandler.send("<ERROR>");
                         e.printStackTrace();
                     }
                     
@@ -86,7 +82,7 @@ public class Applications extends AbstractHandler {
 
             while((line = buffer.readLine()) != null){
                 System.out.println(line);
-                handlerSocket.send(line);
+                socketHandler.send(line);
             }
 
             System.out.println("Completely sent");

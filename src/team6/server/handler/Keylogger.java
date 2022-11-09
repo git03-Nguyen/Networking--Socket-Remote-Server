@@ -4,17 +4,17 @@
  */
 package team6.server.handler;
 
-import team6.server.socket.HandlerSocket;
+import team6.server.socket.SocketHandler;
 
 /**
  *
  * @author Administrator
  */
 public class Keylogger extends AbstractHandler {
-    private HandlerSocket handlerSocket;
+    private SocketHandler socketHandler;
 
-    public Keylogger(HandlerSocket handlerSocket) {
-        super(handlerSocket);
+    public Keylogger(SocketHandler socketHandler) {
+        super(socketHandler);
     }
 
     
