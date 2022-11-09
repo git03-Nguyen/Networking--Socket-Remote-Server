@@ -17,10 +17,9 @@ import team6.server.socket.HandlerSocket;
  */
 public class Applications extends AbstractHandler {
     private HandlerSocket handlerSocket;
-    
-    public Applications(HandlerSocket handlerSocket) throws IOException{
-        this.handlerSocket = handlerSocket;
-        getApplications();
+
+    public Applications(HandlerSocket handlerSocket) {
+        super(handlerSocket);
     }
     
     @Override
@@ -68,6 +67,11 @@ public class Applications extends AbstractHandler {
     @Override
     public void close() {
         
+    }
+    
+    @Override
+    protected void getInitial() {
+        getApplications();
     }
     
     private void getApplications() {

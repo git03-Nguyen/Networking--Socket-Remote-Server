@@ -14,9 +14,9 @@ public class Keylogger extends AbstractHandler {
     private HandlerSocket handlerSocket;
 
     public Keylogger(HandlerSocket handlerSocket) {
-        this.handlerSocket = handlerSocket;
-        startLogging();
+        super(handlerSocket);
     }
+
     
     @Override
     public void executeCommand(String command) {
@@ -29,6 +29,11 @@ public class Keylogger extends AbstractHandler {
     }
 
     private void startLogging() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    protected void getInitial() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     

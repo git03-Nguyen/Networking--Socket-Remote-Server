@@ -41,7 +41,7 @@ public class HandlerSocket {
             Logger.getLogger(HandlerSocket.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        // start receiving messages from client
+        // start receiving messages from client -> new thread
         receive();
     }
     

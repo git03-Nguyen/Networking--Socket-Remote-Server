@@ -12,10 +12,9 @@ import team6.server.socket.HandlerSocket;
  */
 public class Monitor extends AbstractHandler {
     private HandlerSocket handlerSocket;
-    
+
     public Monitor(HandlerSocket handlerSocket) {
-        this.handlerSocket = handlerSocket;
-        getMonitor();
+        super(handlerSocket);
     }
 
     @Override
@@ -29,6 +28,11 @@ public class Monitor extends AbstractHandler {
     }
 
     private void getMonitor() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    protected void getInitial() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

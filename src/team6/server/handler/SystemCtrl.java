@@ -12,23 +12,27 @@ import team6.server.socket.HandlerSocket;
  */
 public class SystemCtrl extends AbstractHandler {
     HandlerSocket handlerSocket;
-    
+
     public SystemCtrl(HandlerSocket handlerSocket) {
-        this.handlerSocket = handlerSocket;
+        super(handlerSocket);
+    }
+    
+    @Override
+    protected void getInitial() {
         getSystemInfo();
     }
-
+    
     @Override
     public void executeCommand(String command) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
     }
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
     }
 
     private void getSystemInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        handlerSocket.send("blablabla");
     }
 }
