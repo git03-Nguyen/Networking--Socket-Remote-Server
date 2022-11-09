@@ -53,7 +53,7 @@ public class GUI extends javax.swing.JFrame {
         });
 
         txtPort.setEditable(false);
-        txtPort.setText("9999");
+        txtPort.setText("9888");
         txtPort.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtPortActionPerformed(evt);

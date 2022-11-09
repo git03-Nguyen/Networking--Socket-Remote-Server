@@ -100,9 +100,9 @@ public class SocketHandler {
                             continue;
                         }
 
-                        if (message[0].equals("<DIS>")) {
+                        if (message[0].equals("<DISC>")) {
                             // disconnect the connection socket and restart listening on port
-                            
+                            setUpSocket(port);
                             return;
                         }
                     }
