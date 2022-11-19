@@ -1,15 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package team6.server.gui;
 
+import team6.server.socket.SocketHandler;
+
 public class GUI extends javax.swing.JFrame {
+    private SocketHandler socketHandler;
     
     public GUI() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+    }
+    
+    public void setSocketHandler(SocketHandler socketHandler) {
+        this.socketHandler = socketHandler;
     }
 
     public String getIP(){
@@ -34,6 +37,11 @@ public class GUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Remote Server");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Remote Controlled Host");
@@ -46,11 +54,6 @@ public class GUI extends javax.swing.JFrame {
 
         txtIP.setEditable(false);
         txtIP.setText("127.0.0.1");
-        txtIP.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtIPActionPerformed(evt);
-            }
-        });
 
         txtPort.setEditable(false);
         txtPort.setText("9888");
@@ -104,9 +107,11 @@ public class GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtIPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIPActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtIPActionPerformed
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        //socketHandler.send("<DESC>$<>$<>".getBytes());
+        //socketHandler.close();
+        System.out.println("Server is closing ...");
+    }//GEN-LAST:event_formWindowClosing
 
     private void txtPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPortActionPerformed
         // TODO add your handling code here:

@@ -14,7 +14,8 @@ public class Processes extends AbstractHandler {
     SocketHandler socketHandler;
 
     public Processes(SocketHandler socketHandler) {
-        super(socketHandler);
+        this.socketHandler = socketHandler;
+        getInitial();
     }
     
     @Override
@@ -22,7 +23,6 @@ public class Processes extends AbstractHandler {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
     public void close() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
@@ -31,7 +31,6 @@ public class Processes extends AbstractHandler {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
     protected void getInitial() {
         getProcesses();
     }

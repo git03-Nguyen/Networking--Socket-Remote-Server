@@ -11,10 +11,11 @@ import team6.server.socket.SocketHandler;
  * @author Administrator
  */
 public class Keylogger extends AbstractHandler {
-    private SocketHandler socketHandler;
+    private final SocketHandler socketHandler;
 
     public Keylogger(SocketHandler socketHandler) {
-        super(socketHandler);
+        this.socketHandler = socketHandler;
+        getInitial();
     }
 
     
@@ -22,8 +23,7 @@ public class Keylogger extends AbstractHandler {
     public void executeCommand(String command) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
-    @Override
+    
     public void close() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
@@ -31,10 +31,9 @@ public class Keylogger extends AbstractHandler {
     private void startLogging() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
-    @Override
+    
     protected void getInitial() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
     }
     
 }

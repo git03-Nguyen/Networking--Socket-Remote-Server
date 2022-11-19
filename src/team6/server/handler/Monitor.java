@@ -1,9 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package team6.server.handler;
 
+import java.awt.AWTException;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
 import team6.server.socket.SocketHandler;
 
 /**
@@ -12,28 +20,41 @@ import team6.server.socket.SocketHandler;
  */
 public class Monitor extends AbstractHandler {
     private SocketHandler socketHandler;
+    private Robot robot;
+    private Rectangle rectangle;
 
-    public Monitor(SocketHandler socketHandler) {
-        super(socketHandler);
+    public Monitor(SocketHandler socketHandler) throws AWTException, IOException {
+        this.socketHandler = socketHandler;
+        initialize();
+        getMonitor();
+    }
+   
+    private void initialize() throws AWTException {
+        GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice screen = gEnv.getDefaultScreenDevice();
+        rectangle = screen.getDefaultConfiguration().getBounds();
+        robot = new Robot(screen);
     }
 
     @Override
     public void executeCommand(String command) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        while (true) {
+            try {
+                if (command.equals("<GET>$<>")) {
+                    getMonitor();
+                    break;
+                }
+            } catch (Exception e) {
+            }
+        }
     }
 
-    @Override
-    public void close() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private void getMonitor() throws IOException {
+        BufferedImage image = robot.createScreenCapture(rectangle);
+        //ImageIO.write(image, "png", new File("D:/a.png"));
+        System.out.println("Captured screen!");
+        socketHandler.send(image);
     }
-
-    private void getMonitor() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    protected void getInitial() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
 }
 

