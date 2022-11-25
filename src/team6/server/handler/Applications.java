@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,93 +15,81 @@ import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 import team6.server.socket.SocketHandler;
 
-/**
- *
- * @author KOHAKU
- */
-public class Applications extends AbstractHandler{
+public class Applications extends Thread {
     private SystemInfo si;
     private OperatingSystem os;
     private List<OSProcess> previousProcesses;
     private SocketHandler socketHandler;
-    
 
-    public Applications(SocketHandler socketHandler) {
-        super();
-        
-        this.socketHandler = socketHandler;
+    public Applications(Socket socket) throws IOException {
+        this.socketHandler = new SocketHandler(socket);
         si = new SystemInfo();
-        previousProcesses = new ArrayList<OSProcess>();
-        
-        System.out.println("GET initial");
-        executeCommand("<GET>$<>");
+        previousProcesses = new ArrayList<>();
+        this.start();
     }
     
+    @Override
+    public void run() {
+        while (!socketHandler.socket.isClosed()) {
+            try {
+                String message = socketHandler.receive();
+                if (message != null) executeCommand(message);
+            } catch (IOException | InterruptedException ex) {
+                Logger.getLogger(Applications.class.getName()).log(Level.SEVERE, null, ex);
+                close();
+            }
+        }
+    }    
+    
     public void executeCommand(String command) {
-        Thread thread = new Thread(){
-            public void run(){
-                System.out.println("Executing command: " + command);
-                String[] message = command.split("\\$",2);
-                ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
+        String[] message = command.split("\\$",2);
 
-                do{
-                    try {
-                       if (message[0].equals("<GET>")) {
-                            System.out.println("<GET>");
-                            byteArray.write(getApplications().getBytes("UTF-8"));
-                            break;
-                        }
-                       
-                        if (message[0].equals("<GET-INSTALLED>")) {
-                            System.out.println("<GET-INSTALLED>");
-                            byteArray = getInstalledApplications();
-                            break;
-                        }
+        do{
+            try {
+               if (message[0].equals("<GET>")) {
+                    sendApplications();
+                    break;
+                }
 
-                        if  (message[0].equals("<START-NAME>")) {
-                            String name = message[1].substring(1, message[1].length() - 1);
-                            startAppByName(name);
-                            break;
-                        }
-                        
-                        if(message[0].equals("<START-ID>")){
-                            String name = message[1].substring(1, message[1].length() -1);
-                            startAppByID(name);
-                            break;
-                        }
+                if (message[0].equals("<GET-INSTALLED>")) {
+                    sendInstalledApplications();
+                    break;
+                }
 
-                        if (message[0].equals("<KILL>")) {
-                            int ID = Integer.parseInt(message[1].substring(1, message[1].length() - 1));
-                            killApp(ID);
-                            break;
-                        }
-                    }
-                    catch(NumberFormatException e) {
-                        //socketHandler.send("<ERROR>");
-                        e.printStackTrace();
-                    }
-                    catch(IOException e){
-                        e.printStackTrace();
-                    }
+                if  (message[0].equals("<START-NAME>")) {
+                    String name = message[1].substring(1, message[1].length() - 1);
+                    startAppByName(name);
+                    break;
+                }
 
-                }while(false);
-                
-                //send data
-                socketHandler.send(byteArray.toByteArray(), byteArray.size());
-            }   
-        };
-        
-        thread.start();
+                if(message[0].equals("<START-ID>")){
+                    String name = message[1].substring(1, message[1].length() -1);
+                    startAppByID(name);
+                    break;
+                }
+
+                if (message[0].equals("<KILL>")) {
+                    int ID = Integer.parseInt(message[1].substring(1, message[1].length() - 1));
+                    killApp(ID);
+                    break;
+                }
+            }
+            catch(NumberFormatException | IOException e) {
+                //socketHandler.send("<ERROR>");
+                e.printStackTrace();
+            }
+
+        } while(false);
     }
     
     public void close() {
-        
+        socketHandler.close();
     }
     
     // return String data(format "name1 pid1 cpu1 ram1\nname2 pid2 cpu2 ram2\n.." ) and null if throw error
-    public String getApplications() {
+    public void sendApplications() {
         //get information from system
-        List<OSProcess> currentProcesses = new ArrayList<OSProcess>();
+        List<OSProcess> currentProcesses = new ArrayList<>();
         int numberOfLogicalProcess = si.getHardware().getProcessor().getLogicalProcessorCount();
         GlobalMemory globalMemory = si.getHardware().getMemory();
         long totalRam = globalMemory.getTotal();
@@ -123,7 +111,7 @@ public class Applications extends AbstractHandler{
             
             while((line = bufferReader.readLine()) != null){
                 line = line.trim();
-                line =line.replaceAll("\\s+", "");
+                line = line.replaceAll("\\s+", "");
                 if(line.equals("\n") || line.equals("")) continue;
                 System.out.println(line);
                 
@@ -133,7 +121,7 @@ public class Applications extends AbstractHandler{
                 currentProcesses.add(os.getProcess(Integer.parseInt(line)));
             }
             
-            for(int i = 0; i< currentProcesses.size(); i++){
+            for (int i = 0; i< currentProcesses.size(); i++){
                 int index = -1;
                 
                 for(int j = 0; j < previousProcesses.size(); j++){
@@ -152,102 +140,78 @@ public class Applications extends AbstractHandler{
                         String.valueOf(cpuUsage) + "%/" + String.valueOf(ramUsage) +"%\n";
             }
             
-            System.out.println(data); // check
-            //super.getSocketHandler().send(data);
-            //System.out.println("Completely sent"); // check
-            
+            System.out.println(data);
+            System.out.println("-------------------------------");
             previousProcesses = currentProcesses;
+            
         } catch (IOException ex) {
             Logger.getLogger(Applications.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            return;
         }
         
-        return data;
+        socketHandler.send(data.getBytes(), data.length());
     }
     
-    // return byte (if convert to string (format))
-    public ByteArrayOutputStream getInstalledApplications() throws IOException{
-        Process process = null;
-        
-        InputStreamReader in = null;
-        process = new ProcessBuilder("powershell","\"Get-StartApps| Format-Table -HideTableHeaders name").start();
-        in = new InputStreamReader(process.getInputStream());
+    public void sendInstalledApplications() throws IOException{
+        Process process = new ProcessBuilder("powershell","\"Get-StartApps| Format-Table -HideTableHeaders name").start();
+        InputStreamReader in = new InputStreamReader(process.getInputStream());
         
         ByteArrayOutputStream b = new ByteArrayOutputStream();
-        int byte_read = 0;
+        int byte_read;
         while ((byte_read = in.read()) != -1){
-                b.write(byte_read);
+            b.write(byte_read);
         }
         
-        // test output
-        System.out.println(new String(b.toByteArray(), "utf-8"));
-        
-        return b;
+        String data = new String(b.toByteArray());
+        data = data.replaceAll(" +", " ");
+        socketHandler.send(data.getBytes(), data.length());
     }
     
-    // throws IOException
     private void startAppByName(String nameApp) throws IOException{
         Runtime.getRuntime().exec(new String[]{"cmd.exe","/c",nameApp});
     }
     
-    private void startAppByID(String nameApp) throws IOException{
-        Process process = null;
-        BufferedReader in = null;
-        String appID = "D:\\Program Files\\Notepad++\\notepad++.exe";
+    private void startAppByID(String nameApp){
+        Thread th = new Thread(){
+            public void run(){
+                try {
+                    // look up appID by name app
+                    Process process = Runtime.getRuntime().exec("powershell.exe Get-StartApps | where { $_.name -eq '" + nameApp + "' } |  Format-Table -HideTableHeaders AppID");
+                    BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+                    String appID = null;
+                    while((appID = in.readLine()) != null){
+                        appID = appID.trim();
+                        if(!appID.equals("") && !appID.equals("\n")) break;
+                    }
+                    System.out.println(appID + "/");
+                    // start App by ID
+                    Runtime.getRuntime().exec("powershell.exe /c start-process shell:AppsFolder\\" +"'"+ appID +"'");
+                }
+                catch(IOException ex){
+                    Logger.getLogger(Applications.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
         
-        // look up appID by name app
-        process = Runtime.getRuntime().exec("powershell.exe Get-StartApps | where { $_.name -eq '" + nameApp + "' } |  Format-Table -HideTableHeaders AppID");
-        in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        
-        while((appID = in.readLine()) != null){
-            appID = appID.trim();
-            if(!appID.equals("") && !appID.equals("\n")) break;
-        }
-        
-        System.out.println(appID + "/");
-        
-        // start App by ID
-        Runtime.getRuntime().exec("powershell.exe /c start-process shell:AppsFolder\\" +"'"+ appID +"'");
+        th.start();
     }
+    
     
     private void killApp(int ID) {
-        try{            // TODO: send error
-            String cmd = "taskkill /F /PID " + String.valueOf(ID);
-            Runtime.getRuntime().exec(cmd);
-        }
-        catch(IOException e){
-            e.printStackTrace();
+        Thread thread = new Thread(){
+          public void run(){
+                try {
+                    String cmd = "taskkill /F /PID " + String.valueOf(ID);
+                    Runtime.getRuntime().exec(cmd);
+                }
+                catch(IOException e){
+                    e.printStackTrace();
 
-        }
-    }
-    
-    private static List<String> splitString(String str){
-        List<String> strings = new ArrayList<String>();
-        int start = 0;
-        for(int i = 0; i < str.length(); i++){
-            if(i == str.length()-1){
-               strings.add(str.substring(start, i+1));
+                }
             }
-            
-            char c = str.charAt(i);
-            if(check(c)) continue;
-            
-            strings.add(str.substring(start, i));
-            start = i+1;
-            
-            while(start < str.length() && !check(str.charAt(start))){
-                start++;
-            } 
-            
-            if(start >= str.length()) break;
-            i = start;
-        }
-        return strings;
+        };
+        thread.start();
     }
     
-    private static boolean check(char c){
-        if(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c >='0' && c <='9' || c== '.' || c == '%' || c == '{' || c == '}'|| c == '.'
-                || c == '-'|| c== '/' || c == '\\') return true;
-        return false;
-    }
 }
